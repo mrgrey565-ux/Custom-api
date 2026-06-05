@@ -1755,7 +1755,7 @@ code, pre {
 
 .form-input::placeholder, .form-textarea::placeholder { color: var(--text-tertiary); }
 
-.form-textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+.form-textarea { resize: vertical; min-height: 250px; max-height: 600px; line-height: 1.6; }
 
 .form-select {
   appearance: none;
