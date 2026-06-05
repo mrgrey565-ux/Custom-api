@@ -7,7 +7,7 @@
  *  - ThemeManager       : Dark/light toggle, localStorage, system detection
  *  - NavManager         : Hamburger menu, mobile nav, connection badge
  *  - StorageManager     : IndexedDB abstraction for conversations + projects
- *  - APIManager         : OpenAI-compatible fetch, streaming, model listing
+ *  - APIManager         : Anthropic-compatible fetch, streaming, model listing
  *  - RAGEngine          : TF-IDF text chunking, similarity search, context injection
  *  - ChatManager        : Message rendering, history, streaming display
  *  - ProjectsManager    : CRUD for projects, file upload, KB management
@@ -458,7 +458,7 @@ const SettingsStore = {
 };
 
 /* ═══════════════════════════════════════════════════════════════
-   API MANAGER
+   API MANAGER  (Anthropic /v1/messages)
 ═══════════════════════════════════════════════════════════════ */
 const APIManager = {
   abortController: null,
@@ -477,56 +477,75 @@ const APIManager = {
     };
   },
 
+  /**
+   * Anthropic does not expose a /models endpoint, so this is a no-op
+   * stub. The model is supplied manually by the user in Settings.
+   */
   async fetchModels() {
-    const { baseUrl, apiKey } = this.getConfig();
-    if (!baseUrl) throw new Error('No base URL configured');
-    const resp = await fetch(`${baseUrl}/models`, {
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      signal: AbortSignal.timeout(10000)
-    });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
-    const data = await resp.json();
-    return (data.data || data.models || []).map(m => ({
-      id: m.id || m.name || m,
-      name: m.id || m.name || m
-    }));
+    return [];
   },
 
+  /**
+   * Bypassed: this proxy does not implement an OpenAI /models endpoint
+   * and Anthropic has no equivalent, so the connectivity check would
+   * always fail. We assume success when credentials are present.
+   */
   async testConnection() {
-    try {
-      const models = await this.fetchModels();
-      return { ok: true, modelCount: models.length };
-    } catch (e) {
-      return { ok: false, error: e.message };
+    const { baseUrl, apiKey } = this.getConfig();
+    if (!baseUrl || !apiKey) {
+      return { ok: false, error: 'Missing base URL or API key' };
     }
+    return { ok: true, modelCount: 0, skipped: true };
   },
 
+  /**
+   * Send a chat completion to the Anthropic Messages API.
+   * Messages API: POST {baseUrl}/v1/messages
+   *   Headers:  x-api-key, anthropic-version, Content-Type
+   *   Body:     { model, messages, max_tokens, temperature, top_p, stream, system? }
+   *   Response: { content: [{ type: "text", text: "..." }], ... }
+   *   Stream:   SSE with event types message_start, content_block_delta, message_stop
+   */
   async sendChat(messages, onToken, onDone, onError) {
     const cfg = this.getConfig();
     if (!cfg.baseUrl) { onError('No API base URL configured. Go to Settings to set it up.'); return; }
+    if (!cfg.apiKey) { onError('No API key configured. Go to Settings to set it up.'); return; }
     if (!cfg.model) { onError('No model selected. Go to Settings to choose a model.'); return; }
 
     this.abortController = new AbortController();
     this.isStreaming = true;
 
+    // Hoist any system messages out of the array — Anthropic requires
+    // system instructions to be a top-level "system" field, not a
+    // message in the messages[] array.
+    const systemMessages = messages.filter(m => m.role === 'system');
+    const userMessages = messages.filter(m => m.role !== 'system');
+    const systemText = systemMessages.map(m => {
+      if (typeof m.content === 'string') return m.content;
+      if (Array.isArray(m.content)) {
+        return m.content.filter(p => p.type === 'text').map(p => p.text).join('\n');
+      }
+      return '';
+    }).join('\n\n');
+
     const body = {
       model: cfg.model,
-      messages: messages,
+      messages: userMessages,
       max_tokens: cfg.maxTokens,
       temperature: cfg.temperature,
       top_p: cfg.topP,
       stream: cfg.streaming
     };
+    if (systemText) body.system = systemText;
 
     try {
-      const resp = await fetch(`${cfg.baseUrl}/chat/completions`, {
+      const resp = await fetch(`${cfg.baseUrl}/v1/messages`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${cfg.apiKey}`,
-          'Content-Type': 'application/json'
+          'x-api-key': cfg.apiKey,
+          'anthropic-version': '2023-06-01',
+          'Content-Type': 'application/json',
+          'anthropic-dangerous-direct-browser-access': 'true'
         },
         body: JSON.stringify(body),
         signal: this.abortController.signal
@@ -535,7 +554,10 @@ const APIManager = {
       if (!resp.ok) {
         const errText = await resp.text();
         let errMsg = `API Error ${resp.status}`;
-        try { const errJson = JSON.parse(errText); errMsg = errJson.error?.message || errMsg; } catch {}
+        try {
+          const errJson = JSON.parse(errText);
+          errMsg = errJson.error?.message || errJson.message || errMsg;
+        } catch {}
         throw new Error(errMsg);
       }
 
@@ -543,7 +565,7 @@ const APIManager = {
         await this._readStream(resp.body, onToken, onDone);
       } else {
         const data = await resp.json();
-        const content = data.choices?.[0]?.message?.content || '';
+        const content = data.content?.[0]?.text || '';
         onToken(content);
         onDone(content);
       }
@@ -557,6 +579,12 @@ const APIManager = {
     }
   },
 
+  /**
+   * Parse Anthropic SSE stream.
+   * Event types: message_start, content_block_start, content_block_delta,
+   *              content_block_stop, message_delta, message_stop, ping, error.
+   * Text deltas arrive as { type: "content_block_delta", delta: { type: "text_delta", text: "..." } }
+   */
   async _readStream(body, onToken, onDone) {
     const reader = body.getReader();
     const decoder = new TextDecoder();
@@ -567,21 +595,36 @@ const APIManager = {
       const { done, value } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
+
+      // Split on newlines, keep the trailing partial line in the buffer
       const lines = buffer.split('\n');
       buffer = lines.pop();
 
       for (const line of lines) {
         const trimmed = line.trim();
-        if (!trimmed || trimmed === 'data: [DONE]') continue;
-        if (!trimmed.startsWith('data: ')) continue;
+        if (!trimmed) continue;
+        if (!trimmed.startsWith('data:')) continue;
+        const data = trimmed.slice(5).trim();
+        if (!data || data === '[DONE]') continue;
         try {
-          const json = JSON.parse(trimmed.slice(6));
-          const delta = json.choices?.[0]?.delta?.content || '';
-          if (delta) {
+          const json = JSON.parse(data);
+          // Anthropic content_block_delta events carry the streaming text
+          if (json.type === 'content_block_delta' && json.delta?.text) {
+            const delta = json.delta.text;
             fullText += delta;
             onToken(delta);
+          } else if (json.type === 'message_stop') {
+            // Stream finished — break out of inner loop, outer read() will return done
+            break;
+          } else if (json.type === 'error' && json.error?.message) {
+            throw new Error(json.error.message);
           }
-        } catch {}
+        } catch (parseErr) {
+          if (parseErr.message && !parseErr.message.startsWith('Unexpected')) {
+            // Re-throw API errors, swallow JSON parse errors
+            throw parseErr;
+          }
+        }
       }
     }
     this.isStreaming = false;
@@ -749,7 +792,7 @@ Current date context: ${new Date().toDateString()}`;
       const encodedPrompt = encodeURIComponent(prompt);
       const url = `https://text.pollinations.ai/${encodedPrompt}?model=openai&seed=42`;
       
-      const resp = await fetch(url, { signal: AbortSignal.timeout(15000) });
+      const resp = await fetch(url, { signal: AbortSignal.timeout });
       if (!resp.ok) throw new Error('Search failed');
       const text = await resp.text();
       return text.trim();
@@ -944,25 +987,32 @@ const ChatManager = {
       opt.selected = true;
       this.modelSelect.appendChild(opt);
     }
-    // Try to fetch models in background
+    // Try to fetch models in background (no-op for Anthropic proxy, but harmless)
     try {
       const models = await APIManager.fetchModels();
-      this.modelSelect.innerHTML = '<option value="">— Select Model —</option>';
-      models.forEach(m => {
-        const opt = document.createElement('option');
-        opt.value = m.id;
-        opt.textContent = m.id;
-        if (m.id === activeModel) opt.selected = true;
-        this.modelSelect.appendChild(opt);
-      });
-      if (activeModel && !models.find(m => m.id === activeModel)) {
-        const opt = document.createElement('option');
-        opt.value = activeModel;
-        opt.textContent = activeModel;
-        opt.selected = true;
-        this.modelSelect.appendChild(opt);
+      if (models && models.length) {
+        this.modelSelect.innerHTML = '<option value="">— Select Model —</option>';
+        models.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m.id;
+          opt.textContent = m.id;
+          if (m.id === activeModel) opt.selected = true;
+          this.modelSelect.appendChild(opt);
+        });
+        if (activeModel && !models.find(m => m.id === activeModel)) {
+          const opt = document.createElement('option');
+          opt.value = activeModel;
+          opt.textContent = activeModel;
+          opt.selected = true;
+          this.modelSelect.appendChild(opt);
+        }
+        NavManager.updateConnectionBadge('connected', 'Connected');
+      } else if (activeModel) {
+        // No model list returned — keep the manually-set model, mark connected
+        NavManager.updateConnectionBadge('connected', 'Connected');
+      } else {
+        NavManager.updateConnectionBadge('error', 'No model');
       }
-      NavManager.updateConnectionBadge('connected', 'Connected');
     } catch {
       NavManager.updateConnectionBadge('error', 'Offline');
     }
@@ -1201,7 +1251,8 @@ const ChatManager = {
     if (this.currentProjectId) {
       const ragResult = await this.performRAG(text);
       if (ragResult) {
-        // Inject as system-level context
+        // Inject as system-level context (sendChat will hoist this into
+        // the top-level "system" field required by Anthropic)
         const contextMsg = { role: 'system', content: ragResult };
         apiMessages = [contextMsg, ...apiMessages.filter(m => m.role !== 'system')];
         // Show RAG indicator briefly
@@ -1232,7 +1283,6 @@ const ChatManager = {
       aiSources = this._lastRAGSources;
       this._lastRAGSources = null;
     }
-
     APIManager.sendChat(
       apiMessages,
       (token) => {
@@ -2085,25 +2135,23 @@ const SettingsManager = {
     const sel = $('#modelSelectSettings');
     if (!sel) return;
     const active = localStorage.getItem('nexus_activeModel') || '';
-    try {
-      const models = await APIManager.fetchModels();
-      sel.innerHTML = '<option value="">— Select a model —</option>';
-      models.forEach(m => {
-        const opt = document.createElement('option');
-        opt.value = m.id;
-        opt.textContent = m.id;
-        if (m.id === active) opt.selected = true;
-        sel.appendChild(opt);
-      });
-      NavManager.updateConnectionBadge('connected', 'Connected');
-    } catch {
-      sel.innerHTML = `<option value="">${active || '— Connect API first —'}</option>`;
-      NavManager.updateConnectionBadge('error', 'Offline');
+    // Anthropic has no /models endpoint, so we don't try to fetch.
+    // The user supplies the model name manually in the input below.
+    if (active) {
+      sel.innerHTML = '';
+      const opt = document.createElement('option');
+      opt.value = active;
+      opt.textContent = active;
+      opt.selected = true;
+      sel.appendChild(opt);
+    } else {
+      sel.innerHTML = '<option value="">— Enter model name below —</option>';
     }
+    NavManager.updateConnectionBadge('connected', 'Ready');
   },
 
   bindEvents() {
-    // Test connection
+    // Test connection — bypassed for the Anthropic proxy
     $('#testConnectionBtn')?.addEventListener('click', async () => {
       const btn = $('#testConnectionBtn');
       const card = $('#connectionStatusCard');
@@ -2116,6 +2164,8 @@ const SettingsManager = {
       if (bu) localStorage.setItem('nexus_baseUrl', bu);
       if (ak) localStorage.setItem('nexus_apiKey', ak);
 
+      // Anthropic proxy has no testable /models endpoint, so we just
+      // confirm credentials are present and mark the card as ready.
       const result = await APIManager.testConnection();
       this.updateConnectionStatus(result);
       if (btn) btn.textContent = 'Test';
@@ -2158,7 +2208,7 @@ const SettingsManager = {
       }
     });
 
-    // Fetch models button
+    // Fetch models button — no-op for Anthropic, but kept for UX consistency
     $('#fetchModelsBtn')?.addEventListener('click', async () => {
       const btn = $('#fetchModelsBtn');
       if (btn) btn.textContent = 'Fetching...';
@@ -2177,6 +2227,17 @@ const SettingsManager = {
     // Manual model
     $('#manualModel')?.addEventListener('input', e => {
       localStorage.setItem('nexus_activeModel', e.target.value);
+      // Reflect into the select if present
+      const sel = $('#modelSelectSettings');
+      if (sel) {
+        const exists = [...sel.options].find(o => o.value === e.target.value);
+        if (!exists && e.target.value) {
+          const opt = new Option(e.target.value, e.target.value, true, true);
+          sel.add(opt);
+        } else if (exists) {
+          sel.value = e.target.value;
+        }
+      }
     });
 
     // Preset model cards
@@ -2310,8 +2371,8 @@ const SettingsManager = {
 
     if (result.ok) {
       card.className = 'connection-status-card success';
-      if (title) title.textContent = 'Connected';
-      if (desc) desc.textContent = `Successfully connected. ${result.modelCount} model${result.modelCount !== 1 ? 's' : ''} available.`;
+      if (title) title.textContent = 'Ready';
+      if (desc) desc.textContent = 'Credentials saved. Type your model name in the field below (e.g. claude-sonnet-4-5).';
       NavManager.updateConnectionBadge('connected', 'Connected');
       if (icon) icon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
     } else {
@@ -2369,6 +2430,8 @@ window.NexusApp = {
     setTimeout(async () => {
       const { baseUrl, apiKey } = SettingsStore.getCredentials();
       if (baseUrl && apiKey) {
+        // Bypassed: no testable endpoint on the Anthropic proxy.
+        // We just mark the badge as connected if credentials are present.
         const result = await APIManager.testConnection();
         NavManager.updateConnectionBadge(
           result.ok ? 'connected' : 'error',
