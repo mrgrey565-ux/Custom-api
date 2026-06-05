@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1117" />
+  <title>Settings — NexusAI</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="settings-page">
+
+  <!-- NAV -->
+  <header class="top-nav" id="topNav" role="banner">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="NexusAI Home">
+        <div class="logo-mark">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <rect width="28" height="28" rx="8" fill="url(#logo-grad-s)"/>
+            <path d="M7 14 L11 8 L15 14 L19 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7 20 L11 14 L15 20 L19 14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+            <defs><linearGradient id="logo-grad-s" x1="0" y1="0" x2="28" y2="28"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient></defs>
+          </svg>
+        </div>
+        <span class="logo-text">NexusAI</span>
+      </a>
+      <nav class="nav-links" role="navigation" aria-label="Main navigation">
+        <a href="index.html" class="nav-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chat</a>
+        <a href="projects.html" class="nav-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Projects</a>
+        <a href="settings.html" class="nav-link active" aria-current="page"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M4.93 4.93l1.41 1.41M21 12h-1M4 12H3M12 21v-1M12 4V3"/></svg>Settings</a>
+      </nav>
+      <div class="nav-actions">
+        <div class="connection-badge" id="connectionBadge">
+          <span class="badge-dot" id="connectionDot"></span>
+          <span class="badge-label" id="connectionLabel">Offline</span>
+        </div>
+        <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+          <span class="theme-icon sun-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
+          <span class="theme-icon moon-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg></span>
+        </button>
+        <button class="icon-btn hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+          <span class="ham-bar"></span><span class="ham-bar"></span><span class="ham-bar"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" aria-hidden="true"></div>
+  <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation" aria-hidden="true">
+    <div class="mobile-menu-header">
+      <span class="mobile-menu-title">Menu</span>
+      <button class="icon-btn" id="mobileMenuClose" aria-label="Close menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <a href="index.html" class="mobile-nav-link"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chat</a>
+    <a href="projects.html" class="mobile-nav-link"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Projects</a>
+    <a href="settings.html" class="mobile-nav-link active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M4.93 4.93l1.41 1.41M21 12h-1M4 12H3M12 21v-1M12 4V3"/></svg>Settings</a>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SETTINGS MAIN
+  ═══════════════════════════════════════════════════════════ -->
+  <main class="page-main settings-main" id="mainContent">
+    <div class="settings-container">
+
+      <!-- Page Header -->
+      <div class="page-header reveal">
+        <div class="page-header-text">
+          <h1 class="page-title">Connection Hub</h1>
+          <p class="page-description">Configure your custom API endpoint, model parameters, and application preferences.</p>
+        </div>
+      </div>
+
+      <!-- ─── SECTION: API Connection ─── -->
+      <section class="settings-section reveal" aria-labelledby="apiSectionTitle">
+        <div class="settings-section-header">
+          <div class="settings-section-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          </div>
+          <div>
+            <h2 class="settings-section-title" id="apiSectionTitle">API Connection</h2>
+            <p class="settings-section-desc">Connect to any OpenAI-compatible endpoint (OpenAI, Groq, Together, LM Studio, Ollama, etc.)</p>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="form-group">
+            <label class="form-label" for="baseUrl">
+              Base URL
+              <span class="label-badge">Required</span>
+            </label>
+            <div class="input-with-action">
+              <input type="url" id="baseUrl" class="form-input" placeholder="https://api.openai.com/v1" autocomplete="off" spellcheck="false" />
+              <button class="input-action-small" id="testConnectionBtn" title="Test connection">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                Test
+              </button>
+            </div>
+            <p class="field-hint">Common: <code>https://api.openai.com/v1</code> · <code>https://api.groq.com/openai/v1</code> · <code>http://localhost:11434/v1</code></p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="apiKey">
+              API Key
+              <span class="label-badge">Required</span>
+            </label>
+            <div class="input-with-action">
+              <input type="password" id="apiKey" class="form-input" placeholder="sk-..." autocomplete="off" spellcheck="false" />
+              <button class="input-action-small" id="toggleApiKeyVisibility" aria-label="Toggle API key visibility">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="eyeIconShow"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="eyeIconHide" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+            <p class="field-hint">Stored locally in your browser only. Never sent anywhere except your configured endpoint.</p>
+          </div>
+
+          <!-- Connection status display -->
+          <div class="connection-status-card" id="connectionStatusCard">
+            <div class="status-icon" id="statusIcon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="status-text">
+              <strong id="statusTitle">Not Connected</strong>
+              <span id="statusDesc">Enter your Base URL and API Key above, then click Test to verify the connection.</span>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-ghost" id="clearCredentialsBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              Clear
+            </button>
+            <button class="btn btn-primary" id="saveCredentialsBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save Connection
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── SECTION: Model Selection ─── -->
+      <section class="settings-section reveal" aria-labelledby="modelSectionTitle">
+        <div class="settings-section-header">
+          <div class="settings-section-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+          </div>
+          <div>
+            <h2 class="settings-section-title" id="modelSectionTitle">Model Selection</h2>
+            <p class="settings-section-desc">Fetch available models from your endpoint or specify one manually.</p>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="form-group">
+            <div class="label-with-action">
+              <label class="form-label" for="modelSelectSettings">Active Model</label>
+              <button class="btn-link" id="fetchModelsBtn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                Fetch Available Models
+              </button>
+            </div>
+            <div class="model-select-wrapper">
+              <select id="modelSelectSettings" class="form-input form-select" aria-label="Select active model">
+                <option value="">— Connect API to fetch models —</option>
+              </select>
+              <svg class="select-chevron-inner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="manualModel">Or specify model ID manually</label>
+            <input type="text" id="manualModel" class="form-input" placeholder="e.g., gpt-4o, claude-3-5-sonnet, llama3:8b" />
+          </div>
+
+          <!-- Model cards for quick presets -->
+          <div class="preset-models">
+            <p class="preset-label">Quick Presets</p>
+            <div class="preset-grid">
+              <button class="preset-card" data-model="gpt-4o" data-provider="OpenAI">
+                <span class="preset-name">GPT-4o</span>
+                <span class="preset-provider">OpenAI</span>
+              </button>
+              <button class="preset-card" data-model="gpt-4o-mini" data-provider="OpenAI">
+                <span class="preset-name">GPT-4o Mini</span>
+                <span class="preset-provider">OpenAI</span>
+              </button>
+              <button class="preset-card" data-model="llama-3.3-70b-versatile" data-provider="Groq">
+                <span class="preset-name">Llama 3.3 70B</span>
+                <span class="preset-provider">Groq</span>
+              </button>
+              <button class="preset-card" data-model="mixtral-8x7b-32768" data-provider="Groq">
+                <span class="preset-name">Mixtral 8x7B</span>
+                <span class="preset-provider">Groq</span>
+              </button>
+              <button class="preset-card" data-model="gemma2-9b-it" data-provider="Groq">
+                <span class="preset-name">Gemma 2 9B</span>
+                <span class="preset-provider">Groq</span>
+              </button>
+              <button class="preset-card" data-model="llama3:8b" data-provider="Ollama">
+                <span class="preset-name">Llama3 8B</span>
+                <span class="preset-provider">Ollama (Local)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── SECTION: Generation Parameters ─── -->
+      <section class="settings-section reveal" aria-labelledby="paramSectionTitle">
+        <div class="settings-section-header">
+          <div class="settings-section-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          </div>
+          <div>
+            <h2 class="settings-section-title" id="paramSectionTitle">Generation Parameters</h2>
+            <p class="settings-section-desc">Fine-tune how the model generates responses.</p>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <!-- Max Tokens -->
+          <div class="param-group">
+            <div class="param-header">
+              <label class="form-label" for="maxTokens">
+                Max Tokens
+                <span class="param-value-badge" id="maxTokensVal">2048</span>
+              </label>
+              <span class="param-desc">Maximum response length</span>
+            </div>
+            <input type="range" id="maxTokens" class="range-slider" min="256" max="32768" step="256" value="2048" aria-label="Maximum output tokens" />
+            <div class="range-labels">
+              <span>256</span>
+              <span>8K</span>
+              <span>32K</span>
+            </div>
+          </div>
+
+          <!-- Temperature -->
+          <div class="param-group">
+            <div class="param-header">
+              <label class="form-label" for="temperature">
+                Temperature
+                <span class="param-value-badge" id="temperatureVal">0.7</span>
+              </label>
+              <span class="param-desc">Creativity vs. precision (0 = focused, 2 = creative)</span>
+            </div>
+            <input type="range" id="temperature" class="range-slider" min="0" max="2" step="0.05" value="0.7" aria-label="Temperature" />
+            <div class="range-labels">
+              <span>Precise</span>
+              <span>Balanced</span>
+              <span>Creative</span>
+            </div>
+          </div>
+
+          <!-- Context Window -->
+          <div class="param-group">
+            <div class="param-header">
+              <label class="form-label" for="contextWindow">
+                Context Window (messages)
+                <span class="param-value-badge" id="contextWindowVal">20</span>
+              </label>
+              <span class="param-desc">How many previous messages to send with each request</span>
+            </div>
+            <input type="range" id="contextWindow" class="range-slider" min="2" max="100" step="2" value="20" aria-label="Context window messages" />
+            <div class="range-labels">
+              <span>2</span>
+              <span>50</span>
+              <span>100</span>
+            </div>
+          </div>
+
+          <!-- Top P -->
+          <div class="param-group">
+            <div class="param-header">
+              <label class="form-label" for="topP">
+                Top P
+                <span class="param-value-badge" id="topPVal">1.0</span>
+              </label>
+              <span class="param-desc">Nucleus sampling probability threshold</span>
+            </div>
+            <input type="range" id="topP" class="range-slider" min="0.1" max="1" step="0.05" value="1.0" aria-label="Top P" />
+            <div class="range-labels">
+              <span>0.1</span>
+              <span>0.5</span>
+              <span>1.0</span>
+            </div>
+          </div>
+
+          <!-- Streaming toggle -->
+          <div class="settings-toggle-row">
+            <div class="settings-toggle-info">
+              <span class="settings-toggle-label">Streaming Responses</span>
+              <span class="settings-toggle-desc">Display tokens as they generate for a live feel</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="streamingToggle" role="switch" checked aria-label="Enable streaming" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-ghost" id="resetParamsBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Reset Defaults
+            </button>
+            <button class="btn btn-primary" id="saveParamsBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+              Save Parameters
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── SECTION: Web Search ─── -->
+      <section class="settings-section reveal" aria-labelledby="webSearchSectionTitle">
+        <div class="settings-section-header">
+          <div class="settings-section-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <div>
+            <h2 class="settings-section-title" id="webSearchSectionTitle">Live Web Search</h2>
+            <p class="settings-section-desc">Augment AI responses with real-time web results via Pollinations AI search.</p>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-toggle-row">
+            <div class="settings-toggle-info">
+              <span class="settings-toggle-label">Enable Web Search by Default</span>
+              <span class="settings-toggle-desc">Automatically inject web results for every new chat session</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="webSearchDefault" role="switch" aria-label="Enable web search by default" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+
+          <div class="info-card">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>
+              <strong>How it works</strong>
+              <p>When enabled, NexusAI sends your query to the Pollinations AI free search API, retrieves the top results, and injects them as context before calling your AI model. No extra API key required.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── SECTION: Appearance ─── -->
+      <section class="settings-section reveal" aria-labelledby="appearanceSectionTitle">
+        <div class="settings-section-header">
+          <div class="settings-section-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <div>
+            <h2 class="settings-section-title" id="appearanceSectionTitle">Appearance</h2>
+            <p class="settings-section-desc">Customize the look and feel of NexusAI.</p>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <!-- Theme -->
+          <div class="form-group">
+            <label class="form-label">Theme</label>
+            <div class="theme-picker" role="group" aria-label="Select theme">
+              <button class="theme-option" data-theme-pref="system" aria-label="Use system theme">
+                <div class="theme-preview system-preview">
+                  <div class="preview-half dark"></div>
+                  <div class="preview-half light"></div>
+                </div>
+                <span>System</span>
+              </button>
+              <button class="theme-option" data-theme-pref="dark" aria-label="Dark theme">
+                <div class="theme-preview dark-preview"></div>
+                <span>Dark</span>
+              </button>
+              <button class="theme-option" data-theme-pref="light" aria-label="Light theme">
+                <div class="theme-preview light-preview"></div>
+                <span>Light</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Font size -->
+          <div class="param-group">
+            <div class="param-header">
+              <label class="form-label" for="fontSize">
+                Font Size
+                <span class="param-value-badge" id="fontSizeVal">16px</span>
+              </label>
+            </div>
+            <input type="range" id="fontSize" class="range-slider" min="13" max="20" step="1" value="16" aria-label="Font size" />
+            <div class="range-labels"><span>Small</span><span>Default</span><span>Large</span></div>
+          </div>
+
+          <!-- Compact mode -->
+          <div class="settings-toggle-row">
+            <div class="settings-toggle-info">
+              <span class="settings-toggle-label">Compact Message Mode</span>
+              <span class="settings-toggle-desc">Reduce spacing between chat messages</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="compactMode" role="switch" aria-label="Compact message mode" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+
+          <!-- Code highlighting -->
+          <div class="settings-toggle-row">
+            <div class="settings-toggle-info">
+              <span class="settings-toggle-label">Syntax Highlighting</span>
+              <span class="settings-toggle-desc">Highlight code blocks with colour themes</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="syntaxHighlight" role="switch" checked aria-label="Syntax highlighting" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" id="saveAppearanceBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+              Save Appearance
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── SECTION: Data Management ─── -->
+      <section class="settings-section reveal" aria-labelledby="dataSectionTitle">
+        <div class="settings-section-header">
+          <div class="settings-section-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </div>
+          <div>
+            <h2 class="settings-section-title" id="dataSectionTitle">Data Management</h2>
+            <p class="settings-section-desc">Manage your locally stored conversations and project knowledge bases.</p>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="data-stats-grid" id="dataStatsGrid">
+            <div class="data-stat">
+              <span class="data-stat-value" id="totalConversations">—</span>
+              <span class="data-stat-label">Conversations</span>
+            </div>
+            <div class="data-stat">
+              <span class="data-stat-value" id="totalMessages">—</span>
+              <span class="data-stat-label">Messages</span>
+            </div>
+            <div class="data-stat">
+              <span class="data-stat-value" id="totalProjects">—</span>
+              <span class="data-stat-label">Projects</span>
+            </div>
+            <div class="data-stat">
+              <span class="data-stat-value" id="totalChunks">—</span>
+              <span class="data-stat-label">KB Chunks</span>
+            </div>
+          </div>
+
+          <div class="data-actions">
+            <button class="btn btn-ghost" id="exportDataBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export All Data
+            </button>
+            <button class="btn btn-ghost btn-danger" id="clearHistoryBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              Clear Chat History
+            </button>
+            <button class="btn btn-ghost btn-danger" id="clearAllDataBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l18 18M10.5 10.677A2 2 0 0 0 10 12a2 2 0 0 0 2 2 2 2 0 0 0 1.322-.5M15 9.354A7 7 0 0 0 5.354 15M4.93 4.93A10 10 0 0 0 15.07 19.07"/></svg>
+              Reset Everything
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── SECTION: About ─── -->
+      <section class="settings-section reveal" aria-labelledby="aboutSectionTitle">
+        <div class="settings-card about-card">
+          <div class="about-logo">
+            <svg width="40" height="40" viewBox="0 0 28 28" fill="none">
+              <rect width="28" height="28" rx="8" fill="url(#about-grad)"/>
+              <path d="M7 14 L11 8 L15 14 L19 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 20 L11 14 L15 20 L19 14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+              <defs><linearGradient id="about-grad" x1="0" y1="0" x2="28" y2="28"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient></defs>
+            </svg>
+          </div>
+          <h3 class="about-title">NexusAI Universal Interface</h3>
+          <p class="about-version">Version 1.0.0 — Personal Edition</p>
+          <p class="about-desc">A fully client-side, privacy-first AI platform that works with any OpenAI-compatible API. No servers, no tracking, no lock-in. All data lives in your browser.</p>
+          <div class="about-features">
+            <div class="about-feature">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Universal OpenAI-compatible API support
+            </div>
+            <div class="about-feature">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Expert Projects with document RAG
+            </div>
+            <div class="about-feature">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Live web search augmentation
+            </div>
+            <div class="about-feature">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              100% local — IndexedDB storage
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.NexusApp.initSettings();
+    });
+  </script>
+</body>
+</html>

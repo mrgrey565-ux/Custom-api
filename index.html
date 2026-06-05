@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1117" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>NexusAI — Universal AI Platform</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.json" />
+</head>
+<body class="chat-page">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       TOP NAV
+  ═══════════════════════════════════════════════════════════ -->
+  <header class="top-nav" id="topNav" role="banner">
+    <div class="nav-inner">
+
+      <!-- Logo -->
+      <a href="index.html" class="nav-logo" aria-label="NexusAI Home">
+        <div class="logo-mark">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <rect width="28" height="28" rx="8" fill="url(#logo-grad)"/>
+            <path d="M7 14 L11 8 L15 14 L19 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7 20 L11 14 L15 20 L19 14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+            <defs>
+              <linearGradient id="logo-grad" x1="0" y1="0" x2="28" y2="28">
+                <stop offset="0%" stop-color="#6366f1"/>
+                <stop offset="100%" stop-color="#0ea5e9"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="logo-text">NexusAI</span>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="nav-links" role="navigation" aria-label="Main navigation">
+        <a href="index.html" class="nav-link active" aria-current="page">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Chat
+        </a>
+        <a href="projects.html" class="nav-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Projects
+        </a>
+        <a href="settings.html" class="nav-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M4.93 4.93l1.41 1.41M21 12h-1M4 12H3M12 21v-1M12 4V3"/></svg>
+          Settings
+        </a>
+      </nav>
+
+      <!-- Nav Actions -->
+      <div class="nav-actions">
+        <!-- Connection status indicator -->
+        <div class="connection-badge" id="connectionBadge" title="API Connection Status">
+          <span class="badge-dot" id="connectionDot"></span>
+          <span class="badge-label" id="connectionLabel">Offline</span>
+        </div>
+
+        <!-- Theme toggle -->
+        <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+          <span class="theme-icon sun-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </span>
+          <span class="theme-icon moon-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+          </span>
+        </button>
+
+        <!-- Hamburger -->
+        <button class="icon-btn hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span class="ham-bar"></span>
+          <span class="ham-bar"></span>
+          <span class="ham-bar"></span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" aria-hidden="true"></div>
+  <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation" aria-hidden="true">
+    <div class="mobile-menu-header">
+      <span class="mobile-menu-title">Menu</span>
+      <button class="icon-btn" id="mobileMenuClose" aria-label="Close menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <a href="index.html" class="mobile-nav-link active">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Chat
+    </a>
+    <a href="projects.html" class="mobile-nav-link">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      Projects
+    </a>
+    <a href="settings.html" class="mobile-nav-link">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M4.93 4.93l1.41 1.41M21 12h-1M4 12H3M12 21v-1M12 4V3"/></svg>
+      Settings
+    </a>
+    <div class="mobile-menu-divider"></div>
+    <div class="mobile-menu-info">
+      <div class="connection-badge large" id="mobileConnectionBadge">
+        <span class="badge-dot" id="mobileConnectionDot"></span>
+        <span class="badge-label" id="mobileConnectionLabel">Checking...</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MAIN CHAT LAYOUT
+  ═══════════════════════════════════════════════════════════ -->
+  <main class="chat-layout" id="mainContent">
+
+    <!-- ─── LEFT SIDEBAR: Chat History ─── -->
+    <aside class="chat-sidebar" id="chatSidebar" aria-label="Chat history">
+      <div class="sidebar-header">
+        <h2 class="sidebar-title">Conversations</h2>
+        <button class="icon-btn sidebar-action" id="newChatBtn" aria-label="New chat" title="New Chat">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+
+      <!-- Project context indicator -->
+      <div class="project-context-bar" id="projectContextBar" style="display:none">
+        <div class="project-context-inner">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          <span id="projectContextName">Project</span>
+          <button class="context-clear" id="clearProjectContext" title="Exit project mode">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="chat-history-list" id="chatHistoryList" role="list">
+        <!-- Dynamically populated -->
+        <div class="empty-history" id="emptyHistory">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <p>No conversations yet</p>
+          <span>Start chatting to see history here</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ─── MAIN CHAT AREA ─── -->
+    <section class="chat-main" aria-label="Chat area">
+
+      <!-- Chat toolbar -->
+      <div class="chat-toolbar" id="chatToolbar">
+        <div class="toolbar-left">
+          <button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="chat-model-selector">
+            <select id="modelSelect" class="model-select" aria-label="Select AI model">
+              <option value="">— Select Model —</option>
+            </select>
+            <svg class="select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <!-- Web search toggle -->
+          <label class="toggle-switch" title="Enable live web search">
+            <input type="checkbox" id="webSearchToggle" role="switch" aria-label="Enable web search" />
+            <span class="toggle-track">
+              <span class="toggle-thumb"></span>
+            </span>
+            <span class="toggle-label">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Web
+            </span>
+          </label>
+          <!-- Clear chat -->
+          <button class="icon-btn" id="clearChatBtn" aria-label="Clear current chat" title="Clear Chat">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Web search status bar -->
+      <div class="web-search-bar" id="webSearchBar" style="display:none">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span id="webSearchStatus">Web search enabled — responses will include live data</span>
+      </div>
+
+      <!-- Messages Container -->
+      <div class="messages-container" id="messagesContainer" role="log" aria-live="polite" aria-label="Chat messages">
+
+        <!-- Welcome State -->
+        <div class="welcome-state" id="welcomeState">
+          <div class="welcome-logo">
+            <svg width="56" height="56" viewBox="0 0 28 28" fill="none">
+              <rect width="28" height="28" rx="8" fill="url(#wlg)"/>
+              <path d="M7 14 L11 8 L15 14 L19 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 20 L11 14 L15 20 L19 14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+              <defs><linearGradient id="wlg" x1="0" y1="0" x2="28" y2="28"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient></defs>
+            </svg>
+          </div>
+          <h1 class="welcome-title">NexusAI Universal Interface</h1>
+          <p class="welcome-subtitle">Connect any OpenAI-compatible endpoint. Full control over models, memory, and context.</p>
+
+          <div class="welcome-chips">
+            <button class="chip" data-prompt="Explain the mechanism of action of beta-blockers in heart failure">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              Beta-blockers in heart failure
+            </button>
+            <button class="chip" data-prompt="Create a concise differential diagnosis table for chest pain">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="15" x2="13" y2="15"/></svg>
+              Chest pain differential
+            </button>
+            <button class="chip" data-prompt="Summarize the PACER method for clinical reasoning with an example">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              PACER clinical reasoning
+            </button>
+            <button class="chip" data-prompt="What are the 80/20 high-yield topics for USMLE Step 1 Cardiology?">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              High-yield USMLE topics
+            </button>
+          </div>
+
+          <div class="welcome-setup-prompt" id="welcomeSetupPrompt">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>No API configured. <a href="settings.html">Configure your endpoint</a> to start chatting.</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Typing indicator (hidden until AI responds) -->
+      <div class="typing-indicator" id="typingIndicator" style="display:none" aria-live="polite" aria-label="AI is generating response">
+        <div class="typing-avatar">
+          <svg width="16" height="16" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="8" fill="url(#tg)"/><path d="M7 14 L11 8 L15 14 L19 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="tg" x1="0" y1="0" x2="28" y2="28"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient></defs></svg>
+        </div>
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <button class="stop-btn" id="stopBtn" title="Stop generation">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+          Stop
+        </button>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CHAT INPUT BAR (bottom-fixed, thumb-friendly)
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="chat-input-wrapper" id="chatInputWrapper">
+
+    <!-- Attached files preview -->
+    <div class="attachments-preview" id="attachmentsPreview" style="display:none">
+      <!-- Dynamically populated -->
+    </div>
+
+    <!-- RAG context indicator -->
+    <div class="rag-indicator" id="ragIndicator" style="display:none">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span id="ragIndicatorText">Searching project files...</span>
+    </div>
+
+    <div class="chat-input-bar">
+      <!-- Attach button -->
+      <button class="input-action-btn attach-btn" id="attachBtn" aria-label="Attach file or image" title="Attach file">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+      </button>
+      <input type="file" id="fileInput" accept="image/*,.pdf,.txt,.md" multiple hidden aria-hidden="true" />
+
+      <!-- Textarea -->
+      <div class="input-field-wrapper">
+        <textarea
+          id="chatInput"
+          class="chat-input-field"
+          placeholder="Message NexusAI…"
+          rows="1"
+          aria-label="Type your message"
+          aria-multiline="true"
+        ></textarea>
+      </div>
+
+      <!-- Send button -->
+      <button class="send-btn" id="sendBtn" aria-label="Send message" title="Send">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+
+    <div class="input-footer">
+      <span class="input-hint">
+        <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line
+      </span>
+      <span class="token-counter" id="tokenCounter">~0 tokens</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       TOAST NOTIFICATIONS
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CONTEXT MENU (message actions)
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="context-menu" id="contextMenu" role="menu" aria-hidden="true">
+    <button class="context-menu-item" id="ctxCopy" role="menuitem">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy
+    </button>
+    <button class="context-menu-item" id="ctxRegen" role="menuitem">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Regenerate
+    </button>
+    <div class="context-divider"></div>
+    <button class="context-menu-item danger" id="ctxDelete" role="menuitem">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+      Delete
+    </button>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // Page-specific: Initialize chat UI
+    document.addEventListener('DOMContentLoaded', () => {
+      window.NexusApp.initChat();
+    });
+  </script>
+</body>
+</html>
